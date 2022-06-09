@@ -35,14 +35,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |        |   Z  |   X  |   C  |   V  |   B  |      |      |  |      |      |   N  |   M  | ,  < | . >  | /  ? |        |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
  *                        |      | Lead | Tab  | Space| ESC  |  | Bspc | Enter| Del  | Caps |      |
- *                        |      | LCTL | Sym  |      | GUI  |  | Fun  | Nav  | Num  | LSFT |      |
+ *                        |      | GUI  | Sym  |      | LCTL |  | LSFT | Nav  | Num  | Fun  |      |
  *                        `----------------------------------'  `----------------------------------'
  */
     [QWERTY] = LAYOUT(
       XXXXXXX,   KC_Q,   KC_W,   KC_E,   KC_R,   KC_T,                                                                   KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    XXXXXXX,
       XXXXXXX,   KC_A,   KC_S,   KC_D,   KC_F,   KC_G,                                                                   KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, XXXXXXX,
       XXXXXXX,   KC_Z,   KC_X,   KC_C,   KC_V,   KC_B,   XXXXXXX,   XXXXXXX,                           XXXXXXX, XXXXXXX, KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, XXXXXXX,
-      XXXXXXX, MT(MOD_LCTL, KC_LEAD), LT(SYM, KC_TAB), KC_SPC, MT(MOD_LGUI, KC_ESC),           LT(FUN, KC_BSPC),  LT(NAV, KC_ENT), LT(NUM,KC_DEL), MT(MOD_LSFT, KC_CAPS), XXXXXXX
+      XXXXXXX, MT(MOD_LGUI, KC_LEAD), LT(SYM, KC_TAB), KC_SPC, MT(MOD_LCTL, KC_ESC),           MT(MOD_LSFT, KC_BSPC),  LT(NAV, KC_ENT), LT(NUM,KC_DEL), LT(FUN, KC_CAPS), XXXXXXX
     ),
 /*
  * Lower Layer: Numpad, Media
@@ -68,20 +68,20 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * Raise Layer: Symbols
  *
  * ,-------------------------------------------.                              ,-------------------------------------------.
- * |        |  !   |  @   |  {   |  }   |  |   |                              |      |  _   |  €   |      |      |  \     |
+ * |        |  !   |  @   |  {   |  }   |  |   |                              |      |  _   |  \   |  ' " |      |        |
  * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
- * |        |  #   |  $   |  (   |  )   |  `   |                              |   +  |  -   |  /   |  *   |  %   |  ' "   |
+ * |        |  #   |  $   |  (   |  )   |  `   |                              |   +  |  -   |  /   |  *   |  %   |        |
  * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
- * |        |  %   |  ^   |  [   |  ]   |  ~   |      |      |  |      |      |   &  |  =   |  ,   |  .   |  / ? | - _    |
+ * |        |  %   |  ^   |  [   |  ]   |  ~   |      |      |  |      |      |   &  |  =   |  ,   |  .   |  / ? |        |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
  *                        |      |      |      |      |      |  |      |      |      |      |      |
  *                        |      |      |      |      |      |  |      |      |      |      |      |
  *                        `----------------------------------'  `----------------------------------'
  */
     [SYM] = LAYOUT(
-      _______, KC_EXLM, KC_AT,   KC_LCBR, KC_RCBR, KC_PIPE,                                     _______, KC_UNDS, ALGR(KC_5),_______,_______,KC_BSLS,
-      _______, KC_HASH, KC_DLR,  KC_LPRN, KC_RPRN, KC_GRV,                                      KC_PLUS, KC_MINS, KC_SLSH, KC_ASTR, KC_PERC, KC_QUOT,
-      _______, KC_PERC, KC_CIRC, KC_LBRC, KC_RBRC, KC_TILD, _______, _______, _______, _______, KC_AMPR, KC_EQL,  KC_COMM, KC_DOT,  KC_SLSH, KC_MINS,
+      _______, KC_EXLM, KC_AT,   KC_LCBR, KC_RCBR, KC_PIPE,                                     _______, KC_UNDS, KC_QUOT, KC_BSLS, _______, _______,
+      _______, KC_HASH, KC_DLR,  KC_LPRN, KC_RPRN, KC_GRV,                                      KC_PLUS, KC_MINS, KC_SLSH, KC_ASTR, KC_PERC, _______,
+      _______, KC_PERC, KC_CIRC, KC_LBRC, KC_RBRC, KC_TILD, _______, _______, _______, _______, KC_AMPR, KC_EQL,  KC_COMM, KC_DOT,  KC_SLSH, _______,
                                  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
     ),
 /*
@@ -145,62 +145,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 //                                  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
 //     ),
 };
-
-bool is_alt_tab_active = false;
-uint16_t alt_tab_timer = 0;
-
-LEADER_EXTERNS();
-
-void matrix_scan_user(void) {
-    if (is_alt_tab_active) {
-        if (timer_elapsed(alt_tab_timer) > 1000) {
-            unregister_code(KC_LALT);
-            is_alt_tab_active = false;
-        }
-    }
-
-    LEADER_DICTIONARY() {
-        leading = false;
-        leader_end();
-
-        SEQ_ONE_KEY(KC_C) { // Inline Code
-            SEND_STRING("`` " SS_TAP(X_LEFT) SS_TAP(X_LEFT));
-        }
-        SEQ_ONE_KEY(KC_P) { // Invoke Password Manager
-            SEND_STRING(SS_LCTRL(SS_LALT("\\")));
-        }
-        SEQ_ONE_KEY(KC_S) { // Windows screenshot
-            SEND_STRING(SS_LGUI("\nS"));
-        }
-        SEQ_TWO_KEYS(KC_F, KC_P) { // Fusion Projection prefix
-            SEND_STRING("[Projection] ");
-        }
-        SEQ_TWO_KEYS(KC_E, KC_T) { // Email splitkb
-            SEND_STRING("thomas@splitkb.com");
-        }
-        SEQ_TWO_KEYS(KC_E, KC_P) { // Email personal
-            SEND_STRING("mail@thomasbaart.nl");
-        }
-        SEQ_TWO_KEYS(KC_S, KC_D) { // Splitkb documentation
-            SEND_STRING("https://docs.splitkb.com/");
-        }
-        SEQ_TWO_KEYS(KC_S, KC_V) { // Splitkb VAT number
-            SEND_STRING("NL210593349B01");
-        }
-        SEQ_TWO_KEYS(KC_B, KC_C) { // Discord bongocat
-            SEND_STRING(":bongocat:\n");
-        }
-        SEQ_TWO_KEYS(KC_C, KC_B) { // Discord code block
-            SEND_STRING("```c" SS_LSFT("\n\n") "``` " SS_TAP(X_UP));
-        }
-        SEQ_TWO_KEYS(KC_Y, KC_S) { // Greeting
-            SEND_STRING("Yours sincerely,\n\nThomas Baart");
-        }
-        SEQ_THREE_KEYS(KC_M, KC_V, KC_G) { // Greeting
-            SEND_STRING("Met vriendelijke groet,\n\nThomas Baart");
-        }
-    }
-}
 
 #ifdef OLED_DRIVER_ENABLE
 oled_rotation_t oled_init_user(oled_rotation_t rotation) {
@@ -270,56 +214,5 @@ void oled_task_user(void) {
     } else {
         render_kyria_logo();
     }
-}
-#endif
-
-#ifdef ENCODER_ENABLE
-bool encoder_update_user(uint8_t index, bool clockwise) {
-    if (index == 0) {
-        switch (biton32(layer_state)) {
-            case QWERTY:
-                // History scrubbing. For Adobe products, hold shift while moving
-                // backward to go forward instead.
-                if (clockwise) {
-                    tap_code16(C(KC_Z));
-                } else {
-                    tap_code16(C(KC_Y));
-                }
-                break;
-            default:
-                // Switch between windows on Windows with alt tab.
-                if (clockwise) {
-                    if (!is_alt_tab_active) {
-                        is_alt_tab_active = true;
-                        register_code(KC_LALT);
-                    } 
-                    alt_tab_timer = timer_read();
-                    tap_code16(KC_TAB);
-                } else {
-                    tap_code16(S(KC_TAB));
-                }
-                break;
-        }
-    } else if (index == 1) {
-        switch (biton32(layer_state)) {
-            case QWERTY:
-                // Scrolling with PageUp and PgDn.
-                if (clockwise) {
-                    tap_code(KC_PGDN);
-                } else {
-                    tap_code(KC_PGUP);
-                }
-                break;
-            default:
-                // Volume control.
-                if (clockwise) {
-                    tap_code(KC_VOLU);
-                } else {
-                    tap_code(KC_VOLD);
-                }
-                break;
-        }
-    }
-  return true;
 }
 #endif
